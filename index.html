@@ -209,12 +209,12 @@
     <div class="field-group">
       <label>6. Where would you like to see improvement?</label>
       <div class="pill-group">
-        <label class="pill-option" data-group="impr"><input type="radio" name="impr" data-field="6 Where would you like to see improvement" value="/Reading"><span class="dot"></span>Reading</label>
-        <label class="pill-option" data-group="impr"><input type="radio" name="impr" data-field="6 Where would you like to see improvement" value="/Math"><span class="dot"></span>Math</label>
-        <label class="pill-option" data-group="impr"><input type="radio" name="impr" data-field="6 Where would you like to see improvement" value="/Study Skills"><span class="dot"></span>Study Skills</label>
-        <label class="pill-option" data-group="impr"><input type="radio" name="impr" data-field="6 Where would you like to see improvement" value="/Writing"><span class="dot"></span>Writing</label>
-        <label class="pill-option" data-group="impr"><input type="radio" name="impr" data-field="6 Where would you like to see improvement" value="/Test Prep"><span class="dot"></span>Test Prep</label>
-        <label class="pill-option" data-group="impr"><input type="radio" name="impr" data-field="6 Where would you like to see improvement" value="/Homework"><span class="dot"></span>Homework</label>
+        <label class="pill-option" data-group="impr" data-cb="true"><input type="checkbox" data-field="impr_Reading" value="Reading"><span class="dot square"></span>Reading</label>
+        <label class="pill-option" data-group="impr" data-cb="true"><input type="checkbox" data-field="impr_Math" value="Math"><span class="dot square"></span>Math</label>
+        <label class="pill-option" data-group="impr" data-cb="true"><input type="checkbox" data-field="impr_StudySkills" value="Study Skills"><span class="dot square"></span>Study Skills</label>
+        <label class="pill-option" data-group="impr" data-cb="true"><input type="checkbox" data-field="impr_Writing" value="Writing"><span class="dot square"></span>Writing</label>
+        <label class="pill-option" data-group="impr" data-cb="true"><input type="checkbox" data-field="impr_TestPrep" value="Test Prep"><span class="dot square"></span>Test Prep</label>
+        <label class="pill-option" data-group="impr" data-cb="true"><input type="checkbox" data-field="impr_Homework" value="Homework"><span class="dot square"></span>Homework</label>
       </div>
       <div style="margin-top:10px"><label style="font-size:12px;color:var(--muted)">Other (specify)</label><input type="text" id="f_Other_3" placeholder="Other subject or area"></div>
     </div>
@@ -537,7 +537,6 @@ async function submitForm(){
     const RADIO_FIELDS = [
       "2 Has anyone in your family previously attended Sylvan",
       "5 At what level do you feel your student is functioning",
-      "6 Where would you like to see improvement",
       "7 Does your student receive any special accommodations or have an Individualized Education Program IEP",
       "9 Are you willing to provide Sylvan with a copy of your students support plan",
       "2 Please indicate when is the most convenient time to schedule conferences or reach you by phone or email"
@@ -607,6 +606,24 @@ async function submitForm(){
         const payRadioMap={'One-time payment':'One time payment','Overall cost':'Overall Cost','Monthly cost':'Monthly Cost','Flexible plans':'toggle_19'};
         form.getRadioGroup('3 Please indicate what is important to you as you choose a payment option').select(payRadioMap[payVals[0]]);
       }catch(e){}
+    }
+
+    // Improvement subjects: multi-checkbox → first fills radio, all stored in Other_3
+    const imprVals=[];
+    if(fields['impr_Reading']) imprVals.push('Reading');
+    if(fields['impr_Math']) imprVals.push('Math');
+    if(fields['impr_StudySkills']) imprVals.push('Study Skills');
+    if(fields['impr_Writing']) imprVals.push('Writing');
+    if(fields['impr_TestPrep']) imprVals.push('Test Prep');
+    if(fields['impr_Homework']) imprVals.push('Homework');
+    if(imprVals.length>0){
+      try{
+        const imprRadioMap={'Reading':'Reading','Math':'Math','Study Skills':'Study Skills','Writing':'Writing','Test Prep':'Test Prep','Homework':'Homework'};
+        form.getRadioGroup('6 Where would you like to see improvement').select(imprRadioMap[imprVals[0]]);
+      }catch(e){}
+      if(imprVals.length>1){
+        try{form.getTextField('Other_3').setText(imprVals.join(', '));form.getTextField('Other_3').setFontSize(12);}catch(e){}
+      }
     }
 
     // Checkboxes
